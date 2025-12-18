@@ -31,7 +31,7 @@ export interface PokemonTypeResponse {
 
 // Get Pokemon list
 export function getPokemonList(limit = 20, offset = 0) {
-  return httpClient<PokemonListResponse>(POKEMON_ENDPOINTS.list(limit, offset));
+  return httpClient<unknown>(POKEMON_ENDPOINTS.list(limit, offset));
 }
 
 // Get Pokemon by name or ID
