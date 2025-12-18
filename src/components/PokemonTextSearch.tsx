@@ -16,7 +16,7 @@ export default function PokemonTextSearch({
       value={value}
       placeholder={placeholder}
       onChange={(e) => onChange && onChange(e.target.value)}
-      className="flex-1 max-w-md lg:max-w-lg xl:max-w-xl px-3 h-8.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="flex-1 max-w-md lg:max-w-lg xl:max-w-xl px-3 h-9 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
   );
 }

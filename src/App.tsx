@@ -1,17 +1,12 @@
-import { GetPokemonTypes, GetPokemonList } from "./components/SearchBar";
-import { useState } from "react";
-function App() {
-  const [selectedType, setSelectedType] = useState<string>("");
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AppContent from "./AppBoard";
 
+export default function App() {
   return (
-    <div>
-      <GetPokemonTypes
-        selectedType={selectedType}
-        onTypeChange={setSelectedType}
-      />
-      <GetPokemonList selectedType={selectedType} />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/root" element={<AppContent />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;

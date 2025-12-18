@@ -67,18 +67,16 @@ export default function SelectedPokemonCard({
               <DialogHeader>
                 <DialogTitle>{name}</DialogTitle>
               </DialogHeader>
-              <DialogDescription>
+              <DialogDescription className="flex flex-col items-center justify-center gap-2 text-center">
                 <img
-                  className="size-75 block justify-center"
+                  className="w-220 h-90"
                   src={(pokemon as any)?.sprites?.front_default}
                   alt={name}
                 />
                 POKEMON POKEMON JAMES TEST {name}.
               </DialogDescription>
               <DialogFooter>
-                <DialogClose>
-                  <Button variant="outline">Close</Button>
-                </DialogClose>
+                <DialogClose className="text-white">Close</DialogClose>
               </DialogFooter>
             </>
           )}
