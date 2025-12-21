@@ -1,11 +1,10 @@
 import { httpClient } from "./httpClient";
 import { POKEMON_ENDPOINTS } from "./endpoints";
 
-/* ===== Types (minimal, extend as needed) ===== */
-
 export interface PokemonListItem {
   name: string;
   url: string;
+  sprite_url?: string;
 }
 
 export interface PokemonListResponse {

@@ -10,8 +10,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { Button } from "@/components/ui/button";
-
 import { getPokemonByNameOrId } from "../gateway/pokemonFetcher";
 
 interface SelectedPokemonCardProps {
@@ -19,12 +17,20 @@ interface SelectedPokemonCardProps {
   onClose: () => void;
 }
 
+interface PokemonSprites {
+  front_default: string | null;
+}
+
+interface PokemonDetails {
+  sprites: PokemonSprites;
+}
+
 export default function SelectedPokemonCard({
   name,
   onClose,
 }: SelectedPokemonCardProps) {
   const [open, setOpen] = useState(false);
-  const [pokemon, setPokemon] = useState<unknown>(null);
+  const [pokemon, setPokemon] = useState<PokemonDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -64,13 +70,16 @@ export default function SelectedPokemonCard({
 
           {!loading && !error && (
             <>
-              <DialogHeader>
-                <DialogTitle>{name}</DialogTitle>
+              <DialogHeader className="flex text-center capitalize">
+                <DialogTitle className="text-3xl">{name}</DialogTitle>
               </DialogHeader>
               <DialogDescription className="flex flex-col items-center justify-center gap-2 text-center">
                 <img
                   className="w-220 h-90"
-                  src={(pokemon as any)?.sprites?.front_default}
+                  src={
+                    pokemon?.sprites.front_default ??
+                    "https://www.svgrepo.com/show/276264/pokeball-pokemon.svg"
+                  }
                   alt={name}
                 />
                 POKEMON POKEMON JAMES TEST {name}.

@@ -11,7 +11,7 @@ import { createPaginator } from "@/utils/Pagination";
 import { pokemonMatchCase, insertSpriteUrl } from "@/utils/PokemonUtils";
 
 import TypeSelect from "./PokemonSelectType";
-import PokemonCard from "./PokemonList";
+import PokemonCard from "./PokemonCard";
 import PokemonTextSearch from "./PokemonTextSearch";
 import SelectedPokemonCard from "./PokemonSelectCard";
 import OverlayLoading from "./OverlayLoading";
@@ -59,20 +59,21 @@ export function GetPokemonTypes({
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {});
+
   if (error) return <p>{error}</p>;
-  console.log(textSearch);
+
   return (
     <>
       <OverlayLoading isLoading={loading} />
-      <div className="flex justify-start gap-4 pt-4">
+      <div className="flex gap-4 pt-4  ml-2">
         <PokemonTextSearch
           value={textSearch}
           placeholder="Search Pokemon"
           onChange={onTextSearchChange}
         />
-
-        <div className="flex justify-end gap-4 ">
-          <div className="flex w-full max-w-xs justify-end ">
+        <div className="flex">
+          <div className="flex w-full max-w-xs justify-end ml-2">
             <TypeSelect
               types={pokemonTypes}
               value={selectedType}
@@ -85,7 +86,7 @@ export function GetPokemonTypes({
               onTypeChange("");
               onTextSearchChange("");
             }}
-            className="w-35 h-9.5 justify-center text-white bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-35 h-9.5 jus tify-center text-white bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Clear Filter
           </Button>
@@ -106,8 +107,17 @@ export function GetPokemonList({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPokemon, setSelectedPokemon] = useState<string | null>(null);
+  const [debouncedText, setDebouncedText] = useState(textSearch); // debounce test
 
-  // Fetch Pokémon list or by type
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedText(textSearch);
+      setOffset(0);
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [textSearch]);
+
   useEffect(() => {
     setError(null);
     setLoading(true);
@@ -130,7 +140,7 @@ export function GetPokemonList({
 
   const filteredPokemon =
     textSearch && textSearch.trim() !== ""
-      ? pokemonMatchCase(pokemonList, textSearch)
+      ? pokemonMatchCase(pokemonList, debouncedText)
       : pokemonList;
 
   const pagedPokemon = filteredPokemon.slice(offset, offset + PAGE_SIZE);
@@ -139,45 +149,50 @@ export function GetPokemonList({
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="justify-center flex flex-col gap-4 w-420 h-235">
-      {loading && <OverlayLoading isLoading />}
+    <>
+      <div className="justify-center flex flex-col gap-4 h-215">
+        {loading && <OverlayLoading isLoading />}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {pagedPokemon.map((p) => (
-          <PokemonCard
-            key={p.name}
-            name={p.name}
-            url={p.sprite_url}
-            onSelect={setSelectedPokemon}
+        <div className="grid grid-cols-5 gap-4 h-auto ml-3 mr-3">
+          {pagedPokemon.map((p, index) => (
+            <PokemonCard
+              key={index}
+              name={p.name}
+              url={p.sprite_url}
+              onSelect={setSelectedPokemon}
+            />
+          ))}
+        </div>
+
+        {selectedPokemon && (
+          <SelectedPokemonCard
+            name={selectedPokemon}
+            onClose={() => setSelectedPokemon(null)}
           />
-        ))}
+        )}
       </div>
 
-      {selectedPokemon && (
-        <SelectedPokemonCard
-          name={selectedPokemon}
-          onClose={() => setSelectedPokemon(null)}
-        />
-      )}
-      {pagedPokemon.length != 0 && (
-        <div className="w-420 flex justify-center items-center gap-4">
-          <Button
-            className="w-25"
-            disabled={!paginator.hasPrevious}
-            onClick={() => setOffset(paginator.previousOffset)}
-          >
-            Previous
-          </Button>
+      <div className="flex justify-center">
+        {pagedPokemon.length != 0 && (
+          <div className="flex justify-center items-center gap-4">
+            <Button
+              className="w-25"
+              disabled={!paginator.hasPrevious}
+              onClick={() => setOffset(paginator.previousOffset)}
+            >
+              Previous
+            </Button>
 
-          <Button
-            className="w-25"
-            disabled={!paginator.hasNext}
-            onClick={() => setOffset(paginator.nextOffset)}
-          >
-            Next
-          </Button>
-        </div>
-      )}
-    </div>
+            <Button
+              className="w-25"
+              disabled={!paginator.hasNext}
+              onClick={() => setOffset(paginator.nextOffset)}
+            >
+              Next
+            </Button>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

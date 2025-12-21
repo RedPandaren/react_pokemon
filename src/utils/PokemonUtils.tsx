@@ -1,6 +1,7 @@
 interface Pokemon {
   name: string;
   url: string;
+  sprit_urle?: string;
 }
 
 export function pokemonMatchCase(
@@ -21,10 +22,7 @@ export function pokemonSpriteFetcher(pokemonUrl: string) {
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" +
     pokemonId +
     ".png";
-
-  console.log("test123" + pokemonUrl);
   return spriteUrl;
-  return parts[parts.length - 1];
 }
 
 export function insertSpriteUrl(list: Pokemon[]) {
