@@ -68,8 +68,6 @@ export function GetPokemonTypes() {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {});
-
   if (error) return <p>{error}</p>;
 
   return (
@@ -94,7 +92,7 @@ export function GetPokemonTypes() {
             onClick={() => {
               dispatch(clearFilters());
             }}
-            className="w-35 h-9.5 jus tify-center text-white bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-35 h-9.5 justify-center text-white bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Clear Filter
           </Button>
@@ -185,7 +183,7 @@ export function GetPokemonList() {
       </div>
 
       <div className="flex justify-center">
-        {pagedPokemon.length != 0 && (
+        {pagedPokemon.length !== 0 && (
           <div className="flex justify-center items-center gap-4">
             <Button
               className="w-25"

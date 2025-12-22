@@ -1,7 +1,7 @@
 interface Pokemon {
   name: string;
   url: string;
-  sprit_urle?: string;
+  sprit_url?: string;
 }
 
 export function pokemonMatchCase(
