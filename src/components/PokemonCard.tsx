@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { myGlobalContext } from "@/GlobalContext";
-import React, { useState } from "react";
+
+import { useState } from "react";
 interface PokemonCardProps {
   name: string;
   url: string;
