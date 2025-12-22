@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface PokemonState {
   selectedType: string;
@@ -32,7 +33,10 @@ const pokemonSlice = createSlice({
       state.textSearch = action.payload;
     },
 
-    setSelectedPokemon: (state, action) => {
+    setSelectedPokemon: (
+      state,
+      action: PayloadAction<PokemonState["selectedPokemon"] | null> // My handler for setting values dynamically
+    ) => {
       state.selectedPokemon = action.payload;
     },
 

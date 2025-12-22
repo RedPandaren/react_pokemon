@@ -22,17 +22,16 @@ import {
   setTextSearch,
   setSelectedPokemon,
   clearFilters,
-  clearSelectedPokemon,
 } from "../store/pokemonSlice";
 
-import type { PokemonListItem } from "../gateway/pokemonFetcher";
+import type * as pokemonFetcher from "../gateway/pokemonFetcher";
 
 interface PokemonByTypeResponse {
-  pokemon: { pokemon: PokemonListItem }[];
+  pokemon: { pokemon: pokemonFetcher.PokemonListItem }[];
 }
 
 interface PokemonListResponse {
-  results: PokemonListItem[];
+  results: pokemonFetcher.PokemonListItem[];
 }
 
 export function GetPokemonTypes() {
@@ -80,19 +79,17 @@ export function GetPokemonTypes() {
           onChange={handleTextSearchChange}
         />
         <div className="flex">
-          <div className="flex w-full max-w-xs justify-end ml-2">
-            <TypeSelect
-              types={pokemonTypes}
-              value={selectedType}
-              onChange={handleTypeChange}
-            />
-          </div>
+          <TypeSelect
+            types={pokemonTypes}
+            value={selectedType}
+            onChange={handleTypeChange}
+          />
 
           <Button
             onClick={() => {
               dispatch(clearFilters());
             }}
-            className="w-35 h-9.5 justify-center text-white bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-30 h-9.5 ml-2 justify-center text-white bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Clear Filter
           </Button>
@@ -114,11 +111,13 @@ export function GetPokemonList() {
   );
 
   const handlSelectedPokemonChange = (value: string) => {
-    dispatch(setSelectedPokemon(value));
+    dispatch(setSelectedPokemon({ name: value }));
   };
 
   const [offset, setOffset] = useState(0);
-  const [pokemonList, setPokemonList] = useState<PokemonListItem[]>([]);
+  const [pokemonList, setPokemonList] = useState<
+    (pokemonFetcher.PokemonListItem & { sprite_url: string })[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -142,10 +141,10 @@ export function GetPokemonList() {
       : getPokemonList(1350, offset);
 
     request
-      .then((response: PokemonByTypeResponse | PokemonListResponse) => {
-        const list: PokemonListItem[] = selectedType
-          ? (response as PokemonByTypeResponse).pokemon.map((p) => p.pokemon)
-          : (response as PokemonListResponse).results;
+      .then((response) => {
+        const list: pokemonFetcher.PokemonListItem[] = selectedType
+          ? (response as PokemonByTypeResponse).pokemon.map((p) => p.pokemon) // maps if fetch select pokemon by types is used
+          : (response as PokemonListResponse).results; // maps if fetch all pokemon is used
 
         setPokemonList(insertSpriteUrl(list));
       })
@@ -158,7 +157,11 @@ export function GetPokemonList() {
       ? pokemonMatchCase(pokemonList, debouncedText)
       : pokemonList;
 
-  const pagedPokemon = filteredPokemon.slice(offset, offset + PAGE_SIZE);
+  const pagedPokemon = (
+    filteredPokemon as (pokemonFetcher.PokemonListItem & {
+      sprite_url: string;
+    })[]
+  ).slice(offset, offset + PAGE_SIZE);
   const paginator = createPaginator(offset, PAGE_SIZE, filteredPokemon.length);
 
   if (error) return <p>{error}</p>;
@@ -183,7 +186,7 @@ export function GetPokemonList() {
       </div>
 
       <div className="flex justify-center">
-        {pagedPokemon.length !== 0 && (
+        {pagedPokemon.length != 0 && (
           <div className="flex justify-center items-center gap-4">
             <Button
               className="w-25"

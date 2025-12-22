@@ -34,7 +34,7 @@ export function getPokemonList(limit = 20, offset = 0) {
 }
 
 // Get Pokemon by name or ID
-export function getPokemonByNameOrId(nameOrId: string | number) {
+export function getPokemonByNameOrId(nameOrId: string) {
   return httpClient(POKEMON_ENDPOINTS.detail(nameOrId));
 }
 

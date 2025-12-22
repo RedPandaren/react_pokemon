@@ -24,44 +24,43 @@ interface PokemonDetails {
 }
 
 export default function SelectedPokemonCard() {
-  const [open, setOpen] = useState(false);
   const [pokemonDetails, setPokemonDetails] = useState<PokemonDetails | null>(
     null
   );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const name = useSelector((state: RootState) => state.pokemon.selectedPokemon);
+  const pokemon = useSelector(
+    (state: RootState) => state.pokemon.selectedPokemon
+  );
+  console.log(pokemon);
 
   useEffect(() => {
-    if (!name) return;
-    setOpen(true);
+    if (!pokemon || !pokemon.name) return;
     setLoading(true);
     setError(null);
 
-    getPokemonByNameOrId(name)
+    getPokemonByNameOrId(pokemon.name)
       .then((response) => {
-        setPokemonDetails(response);
+        setPokemonDetails(response as PokemonDetails);
       })
       .catch((err) => {
         console.error(err);
         setError("Failed to load Pokemon Card");
       })
       .finally(() => setLoading(false));
-  }, [name]);
+  }, [pokemon]);
 
-  //   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <>
-      {name && (
+      {pokemon && (
         <Dialog
-          open={open}
+          open={!!pokemon} // Open State Now Handled Here
           onOpenChange={(isOpen) => {
-            setOpen(isOpen);
             if (!isOpen) {
-              dispatch(clearSelectedPokemon());
+              dispatch(clearSelectedPokemon()); // Reset state in Redux when dialog closes
             }
           }}
         >
@@ -72,7 +71,7 @@ export default function SelectedPokemonCard() {
               <>
                 <DialogHeader className="flex text-center capitalize">
                   <DialogTitle className="text-3xl capitalize animate-pulse">
-                    {name}
+                    {pokemon.name}
                   </DialogTitle>
                 </DialogHeader>
                 <DialogDescription className="flex flex-col items-center justify-center gap-2 text-center">
@@ -82,9 +81,9 @@ export default function SelectedPokemonCard() {
                       pokemonDetails?.sprites.front_default ??
                       "https://www.svgrepo.com/show/276264/pokeball-pokemon.svg"
                     }
-                    alt={name}
+                    alt={pokemon.name ?? "Unknown Pokemon"}
                   />
-                  {name}.
+                  {pokemon.name}.
                 </DialogDescription>
                 <DialogFooter>
                   <DialogClose className="text-white">Close</DialogClose>
