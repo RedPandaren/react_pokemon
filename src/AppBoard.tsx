@@ -13,14 +13,9 @@ function AppBoard() {
         value={{ myState: selectedType, myFunction: setSelectedType }}
       >
         <div className="">
-          <GetPokemonTypes
-            selectedType={selectedType}
-            textSearch={textSearch}
-            onTypeChange={setSelectedType}
-            onTextSearchChange={setTextSearch}
-          />
+          <GetPokemonTypes />
 
-          <GetPokemonList selectedType={selectedType} textSearch={textSearch} />
+          <GetPokemonList />
         </div>
       </myGlobalContext.Provider>
     </>

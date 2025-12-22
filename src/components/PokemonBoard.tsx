@@ -1,7 +1,6 @@
 import {
   getPokemonTypes,
   getPokemonList,
-  getPokemonByNameOrId,
   getPokemonByType,
 } from "../gateway/pokemonFetcher";
 import { useEffect, useState } from "react";
@@ -16,19 +15,17 @@ import PokemonTextSearch from "./PokemonTextSearch";
 import SelectedPokemonCard from "./PokemonSelectCard";
 import OverlayLoading from "./OverlayLoading";
 
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "../reduxStore";
+import {
+  setSelectedType,
+  setTextSearch,
+  setSelectedPokemon,
+  clearFilters,
+  clearSelectedPokemon,
+} from "../store/pokemonSlice";
+
 import type { PokemonListItem } from "../gateway/pokemonFetcher";
-
-interface GetPokemonTypesProps {
-  selectedType: string;
-  textSearch: string;
-  onTypeChange: (type: string) => void;
-  onTextSearchChange: (type: string) => void;
-}
-
-interface GetPokemonListProps {
-  selectedType: string;
-  textSearch: string;
-}
 
 interface PokemonByTypeResponse {
   pokemon: { pokemon: PokemonListItem }[];
@@ -38,15 +35,27 @@ interface PokemonListResponse {
   results: PokemonListItem[];
 }
 
-export function GetPokemonTypes({
-  selectedType,
-  textSearch,
-  onTypeChange,
-  onTextSearchChange,
-}: GetPokemonTypesProps) {
+export function GetPokemonTypes() {
+  const dispatch = useDispatch();
+
+  const selectedType = useSelector(
+    (state: RootState) => state.pokemon.selectedType
+  );
+  const textSearch = useSelector(
+    (state: RootState) => state.pokemon.textSearch
+  ); // REPLACED STATE LISTENER FROM USE STATEE TO THIS HEHE (TEST)
+
   const [pokemonTypes, setPokemonTypes] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleTextSearchChange = (value: string) => {
+    dispatch(setTextSearch(value));
+  };
+
+  const handleTypeChange = (value: string) => {
+    dispatch(setSelectedType(value));
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -70,21 +79,20 @@ export function GetPokemonTypes({
         <PokemonTextSearch
           value={textSearch}
           placeholder="Search Pokemon"
-          onChange={onTextSearchChange}
+          onChange={handleTextSearchChange}
         />
         <div className="flex">
           <div className="flex w-full max-w-xs justify-end ml-2">
             <TypeSelect
               types={pokemonTypes}
               value={selectedType}
-              onChange={onTypeChange}
+              onChange={handleTypeChange}
             />
           </div>
 
           <Button
             onClick={() => {
-              onTypeChange("");
-              onTextSearchChange("");
+              dispatch(clearFilters());
             }}
             className="w-35 h-9.5 jus tify-center text-white bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
@@ -96,17 +104,26 @@ export function GetPokemonTypes({
   );
 }
 
-export function GetPokemonList({
-  selectedType,
-  textSearch,
-}: GetPokemonListProps) {
+export function GetPokemonList() {
   const PAGE_SIZE = 20;
+
+  const dispatch = useDispatch();
+  const selectedType = useSelector(
+    (state: RootState) => state.pokemon.selectedType
+  );
+  const textSearch = useSelector(
+    (state: RootState) => state.pokemon.textSearch
+  );
+
+  const handlSelectedPokemonChange = (value: string) => {
+    dispatch(setSelectedPokemon(value));
+  };
 
   const [offset, setOffset] = useState(0);
   const [pokemonList, setPokemonList] = useState<PokemonListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPokemon, setSelectedPokemon] = useState<string | null>(null);
+
   const [debouncedText, setDebouncedText] = useState(textSearch); // debounce test
 
   useEffect(() => {
@@ -159,17 +176,12 @@ export function GetPokemonList({
               key={index}
               name={p.name}
               url={p.sprite_url}
-              onSelect={setSelectedPokemon}
+              onSelect={handlSelectedPokemonChange}
             />
           ))}
         </div>
 
-        {selectedPokemon && (
-          <SelectedPokemonCard
-            name={selectedPokemon}
-            onClose={() => setSelectedPokemon(null)}
-          />
-        )}
+        <SelectedPokemonCard />
       </div>
 
       <div className="flex justify-center">
