@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import OverlayLoading from "../OverlayLoading";
 import {
   Dialog,
@@ -51,20 +51,38 @@ export default function SelectedPokemonCard() {
         >
           <DialogContent className="max-w-md">
             <DialogHeader className="flex text-center capitalize">
-              <DialogTitle className="text-3xl capitalize animate-pulse">
+              <DialogTitle className="text-4xl capitalize animate-pulse">
                 {pokemon.name}
               </DialogTitle>
             </DialogHeader>
             <DialogDescription className="flex flex-col items-center justify-center gap-2 text-center">
-              <img
-                className="w-220 h-90"
-                src={
-                  data?.sprites.front_default ??
-                  "https://www.svgrepo.com/show/276264/pokeball-pokemon.svg"
-                }
-                alt={pokemon.name ?? "Unknown Pokemon"}
-              />
-              <span>{pokemon.name}</span>
+              <div className="flex flex-row items-center justify-center gap-4">
+                <div className="flex flex-col items-center">
+                  <img
+                    className="w-55 h-55"
+                    src={
+                      data?.sprites?.front_default ??
+                      "https://www.svgrepo.com/show/276264/pokeball-pokemon.svg"
+                    }
+                    alt={pokemon.name ?? "Unknown Pokemon"}
+                  />
+                  <span>Front</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <img
+                    className="w-55 h-55"
+                    src={
+                      data?.sprites?.back_default ??
+                      "https://www.svgrepo.com/show/276264/pokeball-pokemon.svg"
+                    }
+                    alt={pokemon.name ?? "Unknown Pokemon"}
+                  />
+                  <span>Back</span>
+                </div>
+              </div>
+              <span className="capitalize text-black mt-8 text-2xl">
+                View More
+              </span>
             </DialogDescription>
             <DialogFooter>
               <DialogClose className="text-white">Close</DialogClose>

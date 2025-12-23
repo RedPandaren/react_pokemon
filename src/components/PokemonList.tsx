@@ -81,13 +81,10 @@ export default function PokemonList() {
     });
   }, [selectedType, offset]);
 
-  const filteredPokemon = useMemo(
-    () =>
-      textSearch && textSearch.trim() !== ""
-        ? pokemonMatchCase(pokemonList, debouncedText)
-        : pokemonList,
-    [pokemonList, textSearch, debouncedText]
-  );
+  const filteredPokemon =
+    textSearch && textSearch.trim() !== ""
+      ? pokemonMatchCase(pokemonList, debouncedText)
+      : pokemonList;
 
   const pagedPokemon = (
     filteredPokemon as (PokemonListItem & {
@@ -95,7 +92,13 @@ export default function PokemonList() {
     })[]
   ).slice(offset, offset + PAGE_SIZE);
   const paginator = createPaginator(offset, PAGE_SIZE, filteredPokemon.length);
-
+  console.log(
+    offset,
+    PAGE_SIZE,
+    filteredPokemon.length,
+    paginator.previousOffset,
+    paginator.nextOffset
+  );
   if (error) return <p>{error}</p>;
 
   return (
