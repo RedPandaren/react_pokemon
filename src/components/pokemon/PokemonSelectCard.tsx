@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import OverlayLoading from "./OverlayLoading";
+import OverlayLoading from "../OverlayLoading";
 import {
   Dialog,
   DialogClose,
@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { getPokemonByNameOrId } from "../gateway/pokemonFetcher";
+import { getPokemonByNameOrId } from "../../gateway/pokemonFetcher";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/reduxStore";
 import { clearSelectedPokemon } from "@/store/pokemonSlice";
@@ -33,15 +33,12 @@ export default function SelectedPokemonCard() {
   const pokemon = useSelector(
     (state: RootState) => state.pokemon.selectedPokemon
   );
-  console.log(pokemon);
 
   useEffect(() => {
     if (!pokemon || !pokemon.name) return;
-    setLoading(true);
-    setError(null);
-
     getPokemonByNameOrId(pokemon.name)
       .then((response) => {
+        setLoading(true);
         setPokemonDetails(response as PokemonDetails);
       })
       .catch((err) => {

@@ -1,18 +1,20 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
+import ErrorBoundary from "./components/error/ErrorBoundary";
 import AppContent from "./AppBoard";
-import Test from "./Test";
 import store from "./reduxStore";
 
 export default function App() {
   return (
-    <Provider store={store}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/test" element={<Test />} />
-          <Route path="/app" element={<AppContent />} />
-        </Routes>
-      </BrowserRouter>
-    </Provider>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navigate to="/app" replace />} />
+            <Route path="/app" element={<AppContent />} />
+          </Routes>
+        </BrowserRouter>
+      </Provider>
+    </ErrorBoundary>
   );
 }

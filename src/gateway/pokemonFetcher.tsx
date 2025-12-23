@@ -1,36 +1,14 @@
 import { httpClient } from "./httpClient";
 import { POKEMON_ENDPOINTS } from "./endpoints";
-
-export interface PokemonListItem {
-  name: string;
-  url: string;
-  sprite_url?: string;
-}
-
-export interface PokemonListResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: PokemonListItem[];
-}
-
-export interface PokemonType {
-  name: string;
-}
-
-export interface PokemonTypeResponse {
-  name: string;
-  pokemon: {
-    pokemon: {
-      name: string;
-      url: string;
-    };
-  }[];
-}
+import type {
+  PokemonListItem,
+  PokemonType,
+  PokemonTypeResponse,
+} from "@/components/types/Interfaces";
 
 // Get Pokemon list
 export function getPokemonList(limit = 20, offset = 0) {
-  return httpClient<unknown>(POKEMON_ENDPOINTS.list(limit, offset));
+  return httpClient<PokemonListItem>(POKEMON_ENDPOINTS.list(limit, offset));
 }
 
 // Get Pokemon by name or ID

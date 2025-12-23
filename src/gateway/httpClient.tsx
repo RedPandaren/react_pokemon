@@ -13,7 +13,6 @@ export async function httpClient<T>(
   });
 
   if (!response.ok) {
-    console.log(response);
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
 

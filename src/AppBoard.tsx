@@ -1,21 +1,7 @@
-import { GetPokemonTypes, GetPokemonList } from "./components/PokemonBoard";
+import PokemonBoard from "./components/PokemonBoard";
 
-// import { useState } from "react";
-// import { myGlobalContext } from "./GlobalContext";
 function AppBoard() {
-  return (
-    <>
-      {/* <myGlobalContext.Provider
-        value={{ myState: selectedType, myFunction: setSelectedType }}
-      > */}
-      <div className="">
-        <GetPokemonTypes />
-
-        <GetPokemonList />
-      </div>
-      {/* </myGlobalContext.Provider> */}
-    </>
-  );
+  return <PokemonBoard />;
 }
 
 export default AppBoard;
