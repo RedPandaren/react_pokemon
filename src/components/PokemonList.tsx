@@ -33,6 +33,10 @@ export default function PokemonList() {
     (state: RootState) => state.pokemon.textSearch
   );
 
+  const selectedPokemon = useSelector(
+    (state: RootState) => state.pokemon.selectedPokemon
+  );
+
   const handlSelectedPokemonChange = (value: string) => {
     dispatch(setSelectedPokemon({ name: value }));
   };
@@ -110,7 +114,7 @@ export default function PokemonList() {
           ))}
         </div>
 
-        <SelectedPokemonCard />
+        {selectedPokemon && <SelectedPokemonCard />}
       </div>
 
       <div className="flex justify-center">

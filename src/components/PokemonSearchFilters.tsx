@@ -1,4 +1,3 @@
-import { getPokemonTypes } from "../gateway/pokemonFetcher";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 
@@ -15,8 +14,10 @@ import {
   setTextSearch,
   clearFilters,
 } from "../store/pokemonSlice";
+import { useFetchQuery } from "@/gateway/QueryUtils";
 
 export default function PokemonSearchFilters() {
+  const { GetPokemonTypes } = useFetchQuery();
   const dispatch = useDispatch();
 
   const selectedType = useSelector(
@@ -24,10 +25,9 @@ export default function PokemonSearchFilters() {
   );
   const textSearch = useSelector(
     (state: RootState) => state.pokemon.textSearch
-  ); // REPLACED STATE LISTENER FROM USE STATEE TO THIS HEHE (TEST)
+  );
 
   const [pokemonTypes, setPokemonTypes] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleTextSearchChange = (value: string) => {
@@ -38,24 +38,35 @@ export default function PokemonSearchFilters() {
     dispatch(setSelectedType(value));
   };
 
-  useEffect(() => {
-    getPokemonTypes()
-      .then((response) => {
-        setLoading(true);
-        setPokemonTypes(response.results.map((t) => t.name));
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to fetch Pokémon types");
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const { error: queryError, data, isError, isLoading } = GetPokemonTypes();
 
-  if (error) return <p>{error}</p>;
+  useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+
+    if (isError && queryError) {
+      setError("Failed to fetch Pokémon types");
+      // console.error(queryError);
+      return;
+    }
+
+    if (data) {
+      const types = data.results.map((type: { name: string }) => type.name);
+      if (JSON.stringify(types) !== JSON.stringify(pokemonTypes)) {
+        setPokemonTypes(types);
+      }
+    }
+  }, [data, isError, queryError, isLoading, pokemonTypes]);
+
+  if (isError) return <p>{error}</p>;
+
+  if (isLoading) {
+    return <OverlayLoading isLoading={true} />;
+  }
 
   return (
     <>
-      <OverlayLoading isLoading={loading} />
       <div className="flex gap-4 pt-4  ml-2">
         <PokemonTextSearch
           value={textSearch}

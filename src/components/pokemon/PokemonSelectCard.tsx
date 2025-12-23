@@ -9,52 +9,40 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-import { getPokemonByNameOrId } from "../../gateway/pokemonFetcher";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "@/reduxStore";
 import { clearSelectedPokemon } from "@/store/pokemonSlice";
-
-interface PokemonSprites {
-  front_default: string | null;
-}
-
-interface PokemonDetails {
-  sprites: PokemonSprites;
-}
+import { useFetchQuery } from "@/gateway/QueryUtils";
+import type { RootState } from "@/reduxStore";
 
 export default function SelectedPokemonCard() {
-  const [pokemonDetails, setPokemonDetails] = useState<PokemonDetails | null>(
-    null
-  );
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const { GetPokemonByName } = useFetchQuery();
+
   const dispatch = useDispatch();
   const pokemon = useSelector(
     (state: RootState) => state.pokemon.selectedPokemon
   );
 
-  useEffect(() => {
-    if (!pokemon || !pokemon.name) return;
-    getPokemonByNameOrId(pokemon.name)
-      .then((response) => {
-        setLoading(true);
-        setPokemonDetails(response as PokemonDetails);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load Pokemon Card");
-      })
-      .finally(() => setLoading(false));
-  }, [pokemon]);
+  const { data, error, isError, isLoading } = GetPokemonByName(pokemon?.name);
 
-  if (error) return <p>{error}</p>;
+  useEffect(() => {
+    if (!pokemon?.name) {
+      return;
+    }
+  }, [data, pokemon]);
+
+  if (isError && error) {
+    return <p>An error occurred: {error.message}</p>;
+  }
+
+  if (isLoading) {
+    return <OverlayLoading isLoading={true} />;
+  }
 
   return (
     <>
       {pokemon && (
         <Dialog
-          open={!!pokemon} // Open State Now Handled Here
+          open={!!pokemon} // Open state now handled here
           onOpenChange={(isOpen) => {
             if (!isOpen) {
               dispatch(clearSelectedPokemon()); // Reset state in Redux when dialog closes
@@ -62,33 +50,25 @@ export default function SelectedPokemonCard() {
           }}
         >
           <DialogContent className="max-w-md">
-            {loading && <OverlayLoading isLoading={loading} />}
-
-            {!loading && !error && (
-              <>
-                <DialogHeader className="flex text-center capitalize">
-                  <DialogTitle className="text-3xl capitalize animate-pulse">
-                    {pokemon.name}
-                  </DialogTitle>
-                </DialogHeader>
-                <DialogDescription className="flex flex-col items-center justify-center gap-2 text-center">
-                  <img
-                    className="w-220 h-90"
-                    src={
-                      pokemonDetails?.sprites.front_default ??
-                      "https://www.svgrepo.com/show/276264/pokeball-pokemon.svg"
-                    }
-                    alt={pokemon.name ?? "Unknown Pokemon"}
-                  />
-                  {pokemon.name}.
-                </DialogDescription>
-                <DialogFooter>
-                  <DialogClose className="text-white">Close</DialogClose>
-                </DialogFooter>
-              </>
-            )}
-
-            {error && <p>{error}</p>}
+            <DialogHeader className="flex text-center capitalize">
+              <DialogTitle className="text-3xl capitalize animate-pulse">
+                {pokemon.name}
+              </DialogTitle>
+            </DialogHeader>
+            <DialogDescription className="flex flex-col items-center justify-center gap-2 text-center">
+              <img
+                className="w-220 h-90"
+                src={
+                  data?.sprites.front_default ??
+                  "https://www.svgrepo.com/show/276264/pokeball-pokemon.svg"
+                }
+                alt={pokemon.name ?? "Unknown Pokemon"}
+              />
+              <span>{pokemon.name}</span>
+            </DialogDescription>
+            <DialogFooter>
+              <DialogClose className="text-white">Close</DialogClose>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       )}

@@ -1,11 +1,24 @@
+import { useQuery } from "@tanstack/react-query";
+import POKEMON from "../components/config/pokemon.config";
+
+const { POKEMON_URL } = POKEMON;
+
 export const useFetchQuery = () => {
-  return {
-    getPokemonList: () => {
-      const valueName = "james";
-      return {
-        Name: valueName,
-        number: 2,
-      };
-    },
+  const GetPokemonTypes = () => {
+    const url = `${POKEMON_URL}/type`;
+    return useQuery({
+      queryKey: ["pokemonTypes"], // More descriptive query key
+      queryFn: () => fetch(url).then((res) => res.json()),
+    });
   };
+
+  const GetPokemonByName = (name: string) => {
+    const url = `${POKEMON_URL}/pokemon/${name}`;
+    return useQuery({
+      queryKey: ["pokemonDetails", name],
+      queryFn: () => fetch(url).then((res) => res.json()),
+    });
+  };
+
+  return { GetPokemonTypes, GetPokemonByName };
 };
