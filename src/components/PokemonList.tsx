@@ -18,9 +18,11 @@ import type {
   PokemonNoFilterResponse,
 } from "./types/Interfaces";
 
-export default function PokemonList() {
-  const PAGE_SIZE = 20;
+import POKEMON from "../components/config/pokemon.config";
 
+const { PAGE_SIZE } = POKEMON;
+
+export default function PokemonList() {
   const dispatch = useDispatch();
 
   const selectedType = useSelector(

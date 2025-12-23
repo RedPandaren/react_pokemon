@@ -1,10 +1,12 @@
-const BASE_URL = "https://pokeapi.co/api/v2";
+import POKEMON from "../components/config/pokemon.config";
+
+const { POKEMON_URL } = POKEMON;
 
 export async function httpClient<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
+  const response = await fetch(`${POKEMON_URL}${endpoint}`, {
     headers: {
       "Content-Type": "application/json",
       ...options.headers,
