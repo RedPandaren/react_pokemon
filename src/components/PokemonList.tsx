@@ -79,7 +79,7 @@ export default function PokemonList() {
           setLoading(false);
         });
     });
-  }, [selectedType, offset]);
+  }, [selectedType]);
 
   const filteredPokemon =
     textSearch && textSearch.trim() !== ""
@@ -96,8 +96,7 @@ export default function PokemonList() {
     offset,
     PAGE_SIZE,
     filteredPokemon.length,
-    paginator.previousOffset,
-    paginator.nextOffset
+    paginator.previousOffset
   );
   if (error) return <p>{error}</p>;
 
@@ -125,7 +124,7 @@ export default function PokemonList() {
           <div className="flex justify-center items-center gap-4">
             <Button
               className="w-25"
-              disabled={!paginator.hasPrevious}
+              disabled={!paginator.hasPrevious || loading}
               onClick={() => setOffset(paginator.previousOffset)}
             >
               Previous
@@ -133,7 +132,7 @@ export default function PokemonList() {
 
             <Button
               className="w-25"
-              disabled={!paginator.hasNext}
+              disabled={!paginator.hasNext || loading}
               onClick={() => setOffset(paginator.nextOffset)}
             >
               Next
