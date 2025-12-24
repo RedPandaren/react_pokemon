@@ -12,7 +12,10 @@ import SelectedPokemonCard from "./pokemon/PokemonSelectCard";
 import OverlayLoading from "./OverlayLoading";
 
 import type { RootState } from "../reduxStore";
-import type { PokemonListItem } from "./types/Interfaces";
+import type {
+  PokemonListItem,
+  PokemonByTypeResponse,
+} from "./types/Interfaces";
 
 import POKEMON from "../components/config/pokemon.config";
 import { useFetchQuery } from "@/gateway/QueryUtils";
@@ -69,7 +72,7 @@ export default function PokemonList() {
     if (pokemonData) {
       startTransition(() => {
         const list = selectedType
-          ? pokemonData.pokemon.map((p) => p.pokemon)
+          ? (pokemonData as PokemonByTypeResponse).pokemon.map((p) => p.pokemon)
           : pokemonData.results;
 
         setPokemonList(insertSpriteUrl(list));
