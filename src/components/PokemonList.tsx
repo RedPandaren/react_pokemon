@@ -12,11 +12,7 @@ import SelectedPokemonCard from "./pokemon/PokemonSelectCard";
 import OverlayLoading from "./OverlayLoading";
 
 import type { RootState } from "../reduxStore";
-import type {
-  PokemonListItem,
-  PokemonByTypeResponse,
-  PokemonNoFilterResponse,
-} from "./types/Interfaces";
+import type { PokemonListItem } from "./types/Interfaces";
 
 import POKEMON from "../components/config/pokemon.config";
 import { useFetchQuery } from "@/gateway/QueryUtils";
@@ -66,7 +62,7 @@ export default function PokemonList() {
     isError,
   } = selectedType
     ? GetPokemonListByType(selectedType)
-    : GetPokemonList(PAGE_SIZE, offset);
+    : GetPokemonList(1350, offset);
 
   useEffect(() => {
     if (isLoading) return;
