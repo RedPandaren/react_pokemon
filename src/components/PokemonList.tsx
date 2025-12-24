@@ -19,10 +19,13 @@ import type {
 } from "./types/Interfaces";
 
 import POKEMON from "../components/config/pokemon.config";
+import { useFetchQuery } from "@/gateway/QueryUtils";
 
 const { PAGE_SIZE } = POKEMON;
 
 export default function PokemonList() {
+  const { GetPokemonList, GetPokemonListByType } = useFetchQuery();
+
   const dispatch = useDispatch();
 
   const selectedType = useSelector(
@@ -57,29 +60,35 @@ export default function PokemonList() {
     return () => clearTimeout(timeout);
   }, [textSearch]);
 
+  const {
+    data: pokemonData,
+    isLoading,
+    isError,
+  } = selectedType
+    ? GetPokemonListByType(selectedType)
+    : GetPokemonList(PAGE_SIZE, offset);
+
   useEffect(() => {
-    const request = selectedType
-      ? getPokemonByType(selectedType)
-      : getPokemonList(1350, offset);
+    if (isLoading) return;
+    if (pokemonData) {
+      startTransition(() => {
+        const list = selectedType
+          ? pokemonData.pokemon.map((p) => p.pokemon)
+          : pokemonData.results;
 
-    startTransition(() => {
-      request
-        .then((response) => {
-          setLoading(true);
-          const list: PokemonListItem[] = selectedType
-            ? (response as PokemonByTypeResponse).pokemon.map((p) => p.pokemon)
-            : (response as unknown as PokemonNoFilterResponse).results; // convert to unknown first then to Another Type of Interface please code review consider this hehe
+        setPokemonList(insertSpriteUrl(list));
+        setLoading(false);
+      });
+    }
 
-          setPokemonList(insertSpriteUrl(list));
-        })
-        .catch(() => {
-          setError("Failed to load Pokémon list");
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    });
-  }, [selectedType]);
+    if (isError) {
+      setError("Failed to load Pokémon list");
+    }
+  }, [pokemonData, selectedType, offset, isError, isLoading]);
+
+  if (isLoading) {
+    return <OverlayLoading isLoading={true} />;
+  }
 
   const filteredPokemon =
     textSearch && textSearch.trim() !== ""
@@ -91,13 +100,9 @@ export default function PokemonList() {
       sprite_url: string;
     })[]
   ).slice(offset, offset + PAGE_SIZE);
+
   const paginator = createPaginator(offset, PAGE_SIZE, filteredPokemon.length);
-  console.log(
-    offset,
-    PAGE_SIZE,
-    filteredPokemon.length,
-    paginator.previousOffset
-  );
+
   if (error) return <p>{error}</p>;
 
   return (
@@ -120,11 +125,11 @@ export default function PokemonList() {
       </div>
 
       <div className="flex justify-center">
-        {pagedPokemon.length != 0 && (
+        {pagedPokemon.length !== 0 && (
           <div className="flex justify-center items-center gap-4">
             <Button
               className="w-25"
-              disabled={!paginator.hasPrevious || loading}
+              disabled={!paginator.hasPrevious || isLoading}
               onClick={() => setOffset(paginator.previousOffset)}
             >
               Previous
@@ -132,7 +137,7 @@ export default function PokemonList() {
 
             <Button
               className="w-25"
-              disabled={!paginator.hasNext || loading}
+              disabled={!paginator.hasNext || isLoading}
               onClick={() => setOffset(paginator.nextOffset)}
             >
               Next

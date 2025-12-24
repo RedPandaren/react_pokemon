@@ -20,5 +20,26 @@ export const useFetchQuery = () => {
     });
   };
 
-  return { GetPokemonTypes, GetPokemonByName };
+  const GetPokemonList = (limit: number, offset: number) => {
+    const url = `${POKEMON_URL}/pokemon?limit=${limit}&offset=${offset}`;
+    return useQuery({
+      queryKey: ["pokemonList", limit, offset],
+      queryFn: () => fetch(url).then((res) => res.json()),
+    });
+  };
+
+  const GetPokemonListByType = (type: string) => {
+    const url = `${POKEMON_URL}/type/${type}`;
+    return useQuery({
+      queryKey: ["pokemonList", type],
+      queryFn: () => fetch(url).then((res) => res.json()),
+    });
+  };
+
+  return {
+    GetPokemonTypes,
+    GetPokemonByName,
+    GetPokemonList,
+    GetPokemonListByType,
+  };
 };
