@@ -42,10 +42,10 @@ export default function SelectedPokemonCard() {
     <>
       {pokemon && (
         <Dialog
-          open={!!pokemon} // Open state now handled here
+          open={!!pokemon}
           onOpenChange={(isOpen) => {
             if (!isOpen) {
-              dispatch(clearSelectedPokemon()); // Reset state in Redux when dialog closes
+              dispatch(clearSelectedPokemon());
             }
           }}
         >
