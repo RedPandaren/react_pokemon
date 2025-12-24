@@ -4,11 +4,20 @@ import POKEMON from "../components/config/pokemon.config";
 const { POKEMON_URL } = POKEMON;
 
 export const useFetchQuery = () => {
+  const cacheDetails = (seconds: number) => {
+    return {
+      staleTime: seconds * 1000,
+      cacheTime: seconds * 1500,
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+    };
+  };
   const GetPokemonTypes = () => {
     const url = `${POKEMON_URL}/type`;
     return useQuery({
       queryKey: ["pokemonTypes"], // More descriptive query key
       queryFn: () => fetch(url).then((res) => res.json()),
+      ...cacheDetails(3600),
     });
   };
 
@@ -25,6 +34,7 @@ export const useFetchQuery = () => {
     return useQuery({
       queryKey: ["pokemonList", limit, offset],
       queryFn: () => fetch(url).then((res) => res.json()),
+      ...cacheDetails(3600),
     });
   };
 
@@ -33,6 +43,7 @@ export const useFetchQuery = () => {
     return useQuery({
       queryKey: ["pokemonList", type],
       queryFn: () => fetch(url).then((res) => res.json()),
+      ...cacheDetails(3600),
     });
   };
 
@@ -41,5 +52,6 @@ export const useFetchQuery = () => {
     GetPokemonByName,
     GetPokemonList,
     GetPokemonListByType,
+    cacheDetails,
   };
 };

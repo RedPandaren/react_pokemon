@@ -65,7 +65,7 @@ export default function PokemonList() {
     isLoading,
     isError,
   } = selectedType
-    ? GetPokemonListByType(selectedType)
+    ? GetPokemonListByType(selectedType),
     : GetPokemonList(PAGE_SIZE, offset);
 
   useEffect(() => {
